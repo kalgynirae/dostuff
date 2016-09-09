@@ -14,6 +14,17 @@ commands = [
     User('bob', homedir=True, system=True),
 ]
 
+errors = []
+for command in commands:
+    try:
+        command.validate()
+    except ValidationError as e:
+        errors.append((command, e))
+if errors:
+    for command, e in errors:
+        print("error: {} in {}".format(e, command))
+    raise SystemExit
+
 stuff = asyncio.gather(*(command.do() for command in commands))
 
 with contextlib.closing(asyncio.get_event_loop()) as loop:
